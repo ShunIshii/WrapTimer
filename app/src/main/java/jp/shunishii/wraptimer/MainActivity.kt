@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var soundPool: SoundPool
     private var soundShort = 0
-    private val wrapTime: Long = 1000
+    //private var wrapTime: Long = 1000
     private lateinit var mCountDownTimer: CountDownTimer
     private val TAG = "Main"
     private var btStatus = false
@@ -38,22 +38,34 @@ class MainActivity : AppCompatActivity() {
 
         playButton.setOnClickListener{
             if (!btStatus) {
-                btStatus = true
-                countStart()
+                if (timerStart()) {
+                    btStatus = true
+                    playButton.text = "Stop"
+                }
             }
             else {
                 btStatus = false
+                playButton.text = "Play"
             }
         }
     }
 
-    private fun countStart() {
-        Timer().schedule(0, wrapTime) {
-            Log.d(TAG, "sound")
-            if (btStatus)
-                soundPool.play(soundShort, 1.0f, 1.0f, 0, 0, 1.0f)
-            else
-                this.cancel()
+    private fun timerStart(): Boolean {
+        val wrapTimeText = wrapText.text.toString()
+        if (wrapTimeText.isEmpty()) {
+            wrapText.error = "Input number"
+            return false
+        }
+        else {
+            val wrapTime = wrapTimeText.toInt()*1000.toLong()
+            Timer().schedule(0, wrapTime) {
+                Log.d(TAG, "sound")
+                if (btStatus)
+                    soundPool.play(soundShort, 1.0f, 1.0f, 0, 0, 1.0f)
+                else
+                    this.cancel()
+            }
+            return true
         }
     }
 }
