@@ -5,11 +5,20 @@ import android.media.SoundPool
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import kotlinx.android.synthetic.main.activity_main.*
+import android.os.CountDownTimer
+import android.util.Log
+import java.util.*
+import kotlin.concurrent.schedule
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var soundPool: SoundPool
     private var soundShort = 0
+    private val wrapTime: Long = 1000
+    private lateinit var mCountDownTimer: CountDownTimer
+    private val TAG = "Main"
+    private var btStatus = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +37,23 @@ class MainActivity : AppCompatActivity() {
         soundShort = soundPool.load(this, R.raw.sound_short, 1)
 
         playButton.setOnClickListener{
-            soundPool.play(soundShort, 1.0f, 1.0f, 0, 0, 1.0f)
+            if (!btStatus) {
+                btStatus = true
+                countStart()
+            }
+            else {
+                btStatus = false
+            }
+        }
+    }
+
+    private fun countStart() {
+        Timer().schedule(0, wrapTime) {
+            Log.d(TAG, "sound")
+            if (btStatus)
+                soundPool.play(soundShort, 1.0f, 1.0f, 0, 0, 1.0f)
+            else
+                this.cancel()
         }
     }
 }
